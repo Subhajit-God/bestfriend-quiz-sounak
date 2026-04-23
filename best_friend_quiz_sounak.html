@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Best Friend Quiz 💙</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg,#667eea,#764ba2);
+  display:flex;justify-content:center;align-items:center;
+  min-height:100vh;margin:0;color:#333;
+}
+.container {
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(10px);
+  padding:25px;
+  border-radius:20px;
+  width:360px;
+  box-shadow:0 15px 40px rgba(0,0,0,0.25);
+  text-align:center;
+}
+.progress{height:10px;background:#eee;border-radius:10px;overflow:hidden;margin-bottom:10px}
+.progress-bar{height:100%;background:linear-gradient(90deg,#ff7eb3,#ff758c);width:0%}
+.timer{font-size:14px;margin-bottom:8px;color:#555}
+.question{font-size:18px;margin:15px 0;font-weight:500}
+.options button{
+  display:block;width:100%;margin:6px 0;padding:12px;
+  border:none;border-radius:10px;
+  background:linear-gradient(135deg,#6c63ff,#5a54d1);
+  color:white;font-size:14px;cursor:pointer;
+}
+#result{font-size:16px;margin-top:15px;text-align:left}
+.share-btn{
+  margin-top:12px;padding:12px;width:100%;
+  border:none;border-radius:10px;
+  background:linear-gradient(135deg,#28a745,#218838);
+  color:white;font-weight:500;cursor:pointer
+}
+footer{margin-top:15px;font-size:13px;color:#eee}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Best Friend Quiz 🤝</h2>
+  <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+  <div class="timer" id="timer">⏳ 10s</div>
+  <div id="quiz">
+    <div class="question" id="question"></div>
+    <div class="options" id="options"></div>
+  </div>
+  <div id="result"></div>
+  <button class="share-btn" id="shareBtn" style="display:none;">📤 Share Result</button>
+</div>
+
+<footer>Made by Subhajit Das 💙</footer>
+
+<script>
+// ✅ FIX: declare all DOM elements FIRST
+const question = document.getElementById("question");
+const options = document.getElementById("options");
+const resultDiv = document.getElementById("result");
+const shareBtn = document.getElementById("shareBtn");
+const progressBar = document.getElementById("progressBar");
+const timerEl = document.getElementById("timer");
+const quiz = document.getElementById("quiz");
+
+const quizData = [
+  {q:"Favorite movie type?",o:["Action","Comedy","Horror","Romance"],a:"Comedy"},
+{q:"Favorite festival?",o:["Durga Puja","Diwali","Holi","Eid"],a:"Durga Puja"},
+{q:"Favorite season?",o:["Summer","Winter","Rainy","Spring"],a:"Summer"},
+{q:"Favorite sport?",o:["Cricket","Football","Badminton","None"],a:"None"},
+{q:"Favorite timepass?",o:["Mobile","Sleep","Music","Chatting"],a:"Mobile"},
+{q:"Favorite singer?",o:["Arijit Singh","Neha Kakkar","Honey Singh","Badshah"],a:"Arijit Singh"},
+{q:"Favorite place to visit?",o:["Kolkata","Mountain","City","Village"],a:"Kolkata"},
+{q:"Favorite junk food?",o:["Roll","Chowmein","Pizza","Burger"],a:"Pizza"},
+{q:"Favorite sweet?",o:["Rasgulla","Gulab Jamun","Sandesh","Laddu"],a:"Rasgulla"},
+{q:"Favorite cartoon?",o:["Doraemon","Shinchan","Ninja Hattori","Pokemon"],a:"Doraemon"},
+{q:"Favorite study time?",o:["Morning","Afternoon","Evening","Nothing"],a:"Nothing"},
+{q:"Favorite clothing style?",o:["Casual","Formal","Sporty","Traditional"],a:"Casual"},
+{q:"Favorite mobile brand?",o:["Samsung","Realme","Xiaomi","Apple"],a:"Samsung"},
+{q:"Favorite social media?",o:["Instagram","Facebook","Snapchat","WhatsApp"],a:"Instagram"},
+{q:"Favorite hobby?",o:["Coding","Gaming","Instagram","Trading"],a:"Instagram"},
+{q:"Favorite school teacher?",o:["Math Sir","English Sir","Science Sir","None"],a:"None"},
+{q:"Favorite holiday plan?",o:["Trip","Sleep","Gaming","Family time"],a:"Trip"},
+{q:"Favorite ice cream flavor?",o:["Chocolate","Vanilla","Strawberry","Butterscotch"],a:"Chocolate"},
+{q:"Favorite goal in life?",o:["Rich","Famous","Happy","Successful"],a:"Successful"}
+];
+
+let i=0,score=0,ans=[],time=10,timer;
+
+function load(){
+ clearInterval(timer);
+ time=10;
+ tick();
+ timer=setInterval(count,1000);
+
+ let q=quizData[i];
+ question.innerText=q.q;
+ options.innerHTML="";
+ progressBar.style.width=(i/quizData.length*100)+"%";
+
+ q.o.forEach(opt=>{
+  let b=document.createElement("button");
+  b.innerText=opt;
+  b.onclick=()=>select(opt);
+  options.appendChild(b);
+ });
+}
+
+function count(){
+ time--;
+ tick();
+ if(time<=0)select(null);
+}
+
+function tick(){
+ timerEl.innerText=`⏳ ${time}s`;
+}
+
+function select(s){
+ clearInterval(timer);
+ ans.push(s);
+ if(s===quizData[i].a)score++;
+ i++;
+ i<quizData.length?load():showResult();
+}
+
+function showResult(){
+ quiz.style.display="none";
+ timerEl.style.display="none";
+
+ let msg=score<=7?"😅 Fake Friend":score<=15?"😄 Real Friend":"🔥 Legend";
+ let review="<br><b>Review:</b><br>";
+
+ quizData.forEach((q,idx)=>{
+  review+=`${idx+1}. ${q.q}<br>Your: ${ans[idx]||"No Answer"}<br>Correct: ${q.a}<br><br>`;
+ });
+
+ resultDiv.innerHTML=`🎉 ${score}/${quizData.length}<br>${msg}${review}`;
+ shareBtn.style.display="block";
+
+ history.replaceState(null,null,`?score=${score}`);
+}
+
+// ✅ FIX: safe usage after declaration
+shareBtn.onclick=()=>{
+ let text=`I scored ${score}/${quizData.length} 😎`;
+ let url=location.href;
+
+ if(navigator.share){
+  navigator.share({title:"Quiz",text,url});
+ } else {
+  window.open(`https://wa.me/?text=${encodeURIComponent(text+" "+url)}`);
+ }
+};
+
+load();
+</script>
+
+</body>
+</html>
